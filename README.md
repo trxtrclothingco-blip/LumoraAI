@@ -1,2 +1,0 @@
-# LumoraAI
-My Private AI
