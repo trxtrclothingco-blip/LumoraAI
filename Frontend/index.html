@@ -2,19 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Lumora</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lumora 🌙</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Basic reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #1e1e2f; color: #f0f0f0; display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; }
+
+    h1 { margin-bottom: 20px; color: #8ecae6; }
+
+    #chat-box {
+      width: 100%;
+      max-width: 500px;
+      height: 400px;
+      background: #2a2a3d;
+      border-radius: 12px;
+      padding: 15px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    .chat-message { margin-bottom: 10px; }
+    .chat-message strong { color: #ffd166; }
+
+    #chat-form {
+      display: flex;
+      width: 100%;
+      max-width: 500px;
+      gap: 10px;
+    }
+
+    #chat-input {
+      flex: 1;
+      padding: 10px 15px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      background: #3b3b5a;
+      color: #fff;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 12px;
+      background: #8ecae6;
+      color: #1e1e2f;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: #219ebc; }
+
+    /* Mobile responsiveness */
+    @media (max-width: 550px) {
+      #chat-box, #chat-form { max-width: 100%; }
+    }
+  </style>
 </head>
 <body>
 
   <h1>🌙 Lumora</h1>
 
-  <div id="chat"></div>
+  <div id="chat-box"></div>
 
-  <input id="input" placeholder="Speak or type…" />
-  <button onclick="sendMessage()">Send</button>
-  <button onclick="startListening()">🎤</button>
-  <button onclick="toggleVoice()">🔊</button>
+  <form id="chat-form">
+    <input id="chat-input" placeholder="Type a message…" autocomplete="off" />
+    <button type="submit">Send</button>
+    <button type="button" id="mic-button">🎤 Talk</button>
+  </form>
 
   <script src="app.js"></script>
 </body>
