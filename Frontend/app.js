@@ -3,18 +3,51 @@
 const chatForm = document.getElementById("chat-form");
 const chatInput = document.getElementById("chat-input");
 const chatBox = document.getElementById("chat-box");
+const micButton = document.getElementById("mic-button"); // microphone button
 
 // Replace with your Render backend URL
 const BACKEND_URL = "https://lumoraai-oi4j.onrender.com/chat";
 
-chatForm.addEventListener("submit", async (e) => {
+// Speech recognition setup
+let recognition;
+if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = "en-GB";
+  recognition.interimResults = false;
+
+  recognition.onresult = (event) => {
+    const spokenText = event.results[0][0].transcript;
+    chatInput.value = spokenText;
+    sendMessage(spokenText);
+  };
+
+  recognition.onerror = (event) => {
+    console.error("Speech recognition error:", event.error);
+  };
+} else {
+  console.warn("Speech recognition not supported in this browser.");
+}
+
+// Handle form submit (typed messages)
+chatForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const message = chatInput.value.trim();
   if (!message) return;
-
-  // Show user's message
-  appendMessage("You", message);
+  sendMessage(message);
   chatInput.value = "";
+});
+
+// Handle microphone button click
+if (micButton && recognition) {
+  micButton.addEventListener("click", () => {
+    recognition.start();
+  });
+}
+
+// Send message to backend
+async function sendMessage(message) {
+  appendMessage("You", message);
 
   try {
     const res = await fetch(BACKEND_URL, {
@@ -29,7 +62,7 @@ chatForm.addEventListener("submit", async (e) => {
     const data = await res.json();
     if (data.reply) {
       appendMessage("Lumora", data.reply);
-      speakText(data.reply); // optional: voice output
+      speakText(data.reply); // voice output
     } else {
       appendMessage("Lumora", "No reply received.");
     }
@@ -37,8 +70,9 @@ chatForm.addEventListener("submit", async (e) => {
     console.error(err);
     appendMessage("Lumora", "Error connecting to server.");
   }
-});
+}
 
+// Append chat messages to chat box
 function appendMessage(sender, text) {
   const messageEl = document.createElement("div");
   messageEl.classList.add("chat-message");
@@ -47,12 +81,11 @@ function appendMessage(sender, text) {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Optional: add female voice TTS
+// Speak text using female voice
 function speakText(text) {
   if (!("speechSynthesis" in window)) return;
 
   const utterance = new SpeechSynthesisUtterance(text);
-  // You can choose a female voice
   const voices = window.speechSynthesis.getVoices();
   const femaleVoice = voices.find(v => v.name.toLowerCase().includes("female")) || voices[0];
   utterance.voice = femaleVoice;
